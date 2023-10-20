@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+</head>
+<body>
+    <h1>Chat with the Chatbot</h1>
+    <div id="chat-container"></div>
+    <input type="text" id="user-input" placeholder="Type your question..." onkeydown="sendMessage(event)">
+    <script>
+        function sendMessage(event) {
+            if (event.key === 'Enter') {
+                const userMessage = document.getElementById('user-input').value;
+                document.getElementById('user-input').value = '';
+                displayMessage('User', userMessage);
+
+                fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: userMessage })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const chatbotResponse = data.message;
+                    displayMessage('Chatbot', chatbotResponse);
+                });
+            }
+        }
+
+        function displayMessage(sender, message) {
+            const chatContainer = document.getElementById('chat-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            chatContainer.appendChild(messageDiv);
+        }
+    </script>
+</body>
+</html>
